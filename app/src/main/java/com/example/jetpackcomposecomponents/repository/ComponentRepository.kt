@@ -2,23 +2,19 @@ package com.example.jetpackcomposecomponents.repository
 
 import com.example.jetpackcomposecomponents.entity.Component
 import com.example.jetpackcomposecomponents.entity.ComponentDao
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ComponentRepository @Inject constructor(
     private val componentDao: ComponentDao
 ) {
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
-    fun updateComponents(component: List<Component>) =
-        coroutineScope.launch(Dispatchers.IO) {
-            componentDao.updateComponents(component)
-        }
+    val allComponents: Flow<List<Component>>
+        get() = componentDao.getAllComponents().flowOn(Dispatchers.IO)
 
-    fun getAllComponents(components: List<Component>) =
-        coroutineScope.launch(Dispatchers.IO) {
-            componentDao.getAllComponents()
-        }
+    suspend fun updateComponents(component: List<Component>) =
+        componentDao.updateComponents(component)
+
 }

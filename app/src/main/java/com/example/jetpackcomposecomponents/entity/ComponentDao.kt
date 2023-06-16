@@ -18,5 +18,5 @@ interface ComponentDao {
     suspend fun deleteAllComponents(components: List<Component>)
 
     @Query("SELECT * from component_table ORDER BY id ASC")
-    suspend fun getAllComponents(): List<Component>
+    fun getAllComponents(): Flow<List<Component>>
 }
