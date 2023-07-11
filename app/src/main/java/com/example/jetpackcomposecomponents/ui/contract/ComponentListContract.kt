@@ -15,7 +15,7 @@ interface ComponentListContract {
     }
 
     sealed class ComponentIntention {
-
+        object UpdateList: ComponentIntention()
     }
 
     sealed class ComponentEvent {

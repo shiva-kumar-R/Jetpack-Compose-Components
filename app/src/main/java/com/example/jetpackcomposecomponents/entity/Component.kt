@@ -5,14 +5,16 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "component_table")
-data class Component(
-    @ColumnInfo(name = "title")
-    val componentTitle: String,
-    @ColumnInfo(name = "description")
-    val componentDescription: String,
-    @ColumnInfo(name = "urlLink")
-    val componentUrl: String,
+data class ComponentEntity(
+    val components: List<Component>
 ) {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = false)
     var id: Int = 0
 }
+
+data class Component(
+    val componentId: String,
+    val componentTitle: String,
+    val componentDescription: String,
+    val componentUrl: String,
+)

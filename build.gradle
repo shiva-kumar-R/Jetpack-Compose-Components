@@ -8,6 +8,8 @@ buildscript {
 
         composeUiVersion = '1.4.0'
 
+        retrofitVersion = "2.9.0"
+
         lifecycleVersion = '2.6.1'
 
         hiltVersion = '2.44'
