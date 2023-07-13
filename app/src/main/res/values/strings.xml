@@ -3,4 +3,5 @@
 
     <string name="navigation_title">Compose Elements</string>
     <string name="update_list">Update List</string>
+    <string name="error_message">An Error occurred. Please try again after sometime.</string>
 </resources>

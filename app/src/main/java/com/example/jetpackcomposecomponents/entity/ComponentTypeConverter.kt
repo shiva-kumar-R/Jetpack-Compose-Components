@@ -9,13 +9,13 @@ class ComponentTypeConverter {
     val gson = Gson()
 
     @TypeConverter
-    fun componentToString(component: Component): String {
-        return gson.toJson(component)
+    fun componentToString(components: List<Component>): String {
+        return gson.toJson(components)
     }
 
     @TypeConverter
-    fun stringToComponent(recipeString: String): Component {
-        val objectType = object : TypeToken<Component>() {}.type
+    fun stringToComponent(recipeString: String): List<Component> {
+        val objectType = object : TypeToken<List<Component>>() {}.type
         return gson.fromJson(recipeString, objectType)
     }
 

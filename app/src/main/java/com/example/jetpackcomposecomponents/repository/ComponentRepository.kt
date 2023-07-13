@@ -11,8 +11,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class ComponentRepository @Inject constructor(
-    @ApplicationContext
-    private val applicationContext: Context,
+    @ApplicationContext private val context: Context,
     private val componentDao: ComponentDao
 ) {
 
@@ -39,7 +38,7 @@ class ComponentRepository @Inject constructor(
     }
 
     fun getComponentsFromJson(): List<Component>? = try {
-        val jsonString = applicationContext.assets.open("components.json")
+        val jsonString = context.assets.open("components.json")
             .bufferedReader()
             .use { it.readText() }
         val listComponent = object : TypeToken<List<Component>>() {}.type
