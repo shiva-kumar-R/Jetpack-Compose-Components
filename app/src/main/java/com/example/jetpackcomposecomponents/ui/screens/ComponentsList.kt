@@ -44,7 +44,7 @@ fun ComponentsList(
 }
 
 @Composable
-fun LoadingScreen() = Box(modifier = Modifier.fillMaxSize()) {
+internal fun LoadingScreen() = Box(modifier = Modifier.fillMaxSize()) {
     CircularProgressIndicator(
         modifier = Modifier.align(Alignment.Center),
         color = Black700
@@ -52,7 +52,7 @@ fun LoadingScreen() = Box(modifier = Modifier.fillMaxSize()) {
 }
 
 @Composable
-fun SuccessScreen(
+private fun SuccessScreen(
     componentsList: List<Component>,
     itemClickCallback: (String) -> Unit,
     updateActionClickCallback: () -> Unit
@@ -66,7 +66,7 @@ fun SuccessScreen(
 }
 
 @Composable
-fun NavigationBar(updateActionClickCallback: () -> Unit) = TopAppBar(
+private fun NavigationBar(updateActionClickCallback: () -> Unit) = TopAppBar(
     modifier = Modifier
         .fillMaxWidth(),
     title = {
@@ -88,7 +88,7 @@ fun NavigationBar(updateActionClickCallback: () -> Unit) = TopAppBar(
 )
 
 @Composable
-fun ComponentsContent(
+private fun ComponentsContent(
     componentList: List<Component>,
     itemClickCallback: (String) -> Unit
 ) {
@@ -105,7 +105,7 @@ fun ComponentsContent(
 }
 
 @Composable
-fun ComponentItem(component: Component, itemClickCallback: (String) -> Unit) {
+private fun ComponentItem(component: Component, itemClickCallback: (String) -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
         elevation = 4.dp,
@@ -139,7 +139,7 @@ fun ComponentItem(component: Component, itemClickCallback: (String) -> Unit) {
 }
 
 @Composable
-private fun ErrorScreen() {
+internal fun ErrorScreen() {
     Toast.makeText(LocalContext.current, R.string.error_message, Toast.LENGTH_LONG).show()
 }
 
