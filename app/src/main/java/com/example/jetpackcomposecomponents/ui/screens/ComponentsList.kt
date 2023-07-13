@@ -11,11 +11,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,8 +21,8 @@ import com.example.jetpackcomposecomponents.R
 import com.example.jetpackcomposecomponents.entity.Component
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract.ComponentViewState
-import com.example.jetpackcomposecomponents.ui.theme.JetpackcomposecomponentsTheme
-import com.example.jetpackcomposecomponents.ui.theme.Teal200
+import com.example.jetpackcomposecomponents.ui.theme.Black700
+import com.example.jetpackcomposecomponents.ui.theme.JetpackComponentsTheme
 import com.example.jetpackcomposecomponents.viewmodel.ComponentViewModel
 
 @Composable
@@ -47,10 +44,10 @@ fun ComponentsList(
 }
 
 @Composable
-fun LoadingScreen() = Box(modifier = Modifier.wrapContentSize()) {
+fun LoadingScreen() = Box(modifier = Modifier.fillMaxSize()) {
     CircularProgressIndicator(
         modifier = Modifier.align(Alignment.Center),
-        color = Teal200
+        color = Black700
     )
 }
 
@@ -71,17 +68,20 @@ fun SuccessScreen(
 @Composable
 fun NavigationBar(updateActionClickCallback: () -> Unit) = TopAppBar(
     modifier = Modifier
-        .fillMaxWidth()
-        .height(24.dp)
-        .padding(vertical = 8.dp),
-    backgroundColor = Color.Transparent,
-    title = { stringResource(id = R.string.navigation_title) },
+        .fillMaxWidth(),
+    title = {
+        Text(
+            text = stringResource(id = R.string.navigation_title),
+            style = MaterialTheme.typography.h5
+        )
+    },
     actions = {
         Text(
             text = stringResource(id = R.string.update_list),
             modifier = Modifier
                 .padding(end = 8.dp)
                 .clickable { updateActionClickCallback() },
+            style = MaterialTheme.typography.button
         )
     },
     elevation = 0.dp
@@ -108,16 +108,18 @@ fun ComponentsContent(
 fun ComponentItem(component: Component, itemClickCallback: (String) -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
-        backgroundColor = Color.Transparent,
-        elevation = 0.dp,
+        elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
+            .padding(horizontal = 8.dp, vertical = 4.dp)
             .clickable {
                 itemClickCallback(component.componentUrl)
             }
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .padding(8.dp)
+        ) {
             Text(
                 text = component.componentTitle,
                 style = MaterialTheme.typography.body1,
@@ -145,7 +147,16 @@ private fun ErrorScreen() {
 @Preview("Night mode", uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SuccessScreen_Preview() {
-    JetpackcomposecomponentsTheme {
+    JetpackComponentsTheme {
         SuccessScreen(emptyList(), {}, {})
+    }
+}
+
+@Preview("Light mode")
+@Preview("Night mode", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun LoadingScreen_Preview() {
+    JetpackComponentsTheme {
+        LoadingScreen()
     }
 }

@@ -78,6 +78,12 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-compose:$rootProject.composeNavigation"
 
+    //Icons
+    implementation "androidx.compose.material:material-icons-extended:$rootProject.composeUiVersion"
+
+    //Theme
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$rootProject.themeVersion"
+
     implementation "androidx.compose.ui:ui:$rootProject.composeUiVersion"
     implementation "androidx.compose.ui:ui-tooling-preview:$rootProject.composeUiVersion"
     implementation "androidx.compose.material:material:$rootProject.composeMaterialVersion"

@@ -9,7 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jetpackcomposecomponents.ui.screens.ComponentsList
-import com.example.jetpackcomposecomponents.ui.theme.JetpackcomposecomponentsTheme
+import com.example.jetpackcomposecomponents.ui.theme.JetpackComponentsTheme
 import com.example.jetpackcomposecomponents.viewmodel.ComponentViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            JetpackcomposecomponentsTheme {
+            JetpackComponentsTheme {
                 ComposeApp()
             }
         }
