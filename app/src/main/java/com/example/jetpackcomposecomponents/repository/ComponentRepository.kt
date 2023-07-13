@@ -1,15 +1,18 @@
 package com.example.jetpackcomposecomponents.repository
 
+import android.content.Context
 import android.util.Log
 import com.example.jetpackcomposecomponents.entity.Component
 import com.example.jetpackcomposecomponents.entity.ComponentDao
 import com.example.jetpackcomposecomponents.entity.ComponentEntity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class ComponentRepository @Inject constructor(
+    @ApplicationContext
+    private val applicationContext: Context,
     private val componentDao: ComponentDao
 ) {
 
@@ -30,6 +33,18 @@ class ComponentRepository @Inject constructor(
         deleteComponents()
         invalidateCache()
         insertComponents(components)
+    } catch (e: Exception) {
+        Log.w(TAG, e)
+        null
+    }
+
+    fun getComponentsFromJson(): List<Component>? = try {
+        val jsonString = applicationContext.assets.open("components.json")
+            .bufferedReader()
+            .use { it.readText() }
+        val listComponent = object : TypeToken<List<Component>>() {}.type
+        val response = Gson().fromJson<List<Component>>(jsonString, listComponent)
+        response
     } catch (e: Exception) {
         Log.w(TAG, e)
         null

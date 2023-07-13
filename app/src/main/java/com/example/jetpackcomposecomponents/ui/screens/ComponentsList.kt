@@ -18,11 +18,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.jetpackcomposecomponents.R
 import com.example.jetpackcomposecomponents.entity.Component
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract.ComponentViewState
 import com.example.jetpackcomposecomponents.ui.theme.JetpackcomposecomponentsTheme
 import com.example.jetpackcomposecomponents.viewmodel.ComponentViewModel
-import com.example.jetpackcomposecomponents.R
 
 @Composable
 fun ComponentsList(

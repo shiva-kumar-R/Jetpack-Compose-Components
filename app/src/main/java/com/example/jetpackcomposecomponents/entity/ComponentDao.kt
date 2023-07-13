@@ -1,7 +1,6 @@
 package com.example.jetpackcomposecomponents.entity
 
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ComponentDao {

@@ -1,5 +1,6 @@
 package com.example.jetpackcomposecomponents.viewmodel
 
+import android.content.res.AssetManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jetpackcomposecomponents.entity.Component
@@ -7,6 +8,7 @@ import com.example.jetpackcomposecomponents.repository.ComponentRepository
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract.ComponentViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -41,8 +43,8 @@ class ComponentViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun getComponentsFromJson(): List<Component>? = try {
-        null
+    private fun getComponentsFromJson() = try {
+        componentRepository.getComponentsFromJson()
     } catch (e: Exception) {
         null
     }
