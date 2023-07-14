@@ -2,13 +2,17 @@ package com.example.jetpackcomposecomponents.ui.screens
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,6 +27,7 @@ import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract.ComponentViewState
 import com.example.jetpackcomposecomponents.ui.theme.Black700
 import com.example.jetpackcomposecomponents.ui.theme.JetpackComponentsTheme
+import com.example.jetpackcomposecomponents.ui.theme.White200
 import com.example.jetpackcomposecomponents.viewmodel.ComponentViewModel
 
 @Composable
@@ -93,6 +98,7 @@ private fun ComponentsContent(
     itemClickCallback: (String) -> Unit
 ) {
     LazyColumn(
+        modifier = Modifier.background(White200),
         contentPadding = PaddingValues(
             top = 4.dp,
             bottom = 16.dp
@@ -108,6 +114,7 @@ private fun ComponentsContent(
 private fun ComponentItem(component: Component, itemClickCallback: (String) -> Unit) {
     Card(
         shape = RoundedCornerShape(8.dp),
+        backgroundColor = Black700,
         elevation = 4.dp,
         modifier = Modifier
             .fillMaxWidth()
@@ -116,23 +123,38 @@ private fun ComponentItem(component: Component, itemClickCallback: (String) -> U
                 itemClickCallback(component.componentUrl)
             }
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .padding(8.dp)
         ) {
-            Text(
-                text = component.componentTitle,
-                style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(vertical = 4.dp),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-            Text(
-                text = component.componentDescription,
-                style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(vertical = 4.dp),
-                maxLines = 5,
-                overflow = TextOverflow.Ellipsis
+            Column(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .weight(0.8f)
+            ) {
+                Text(
+                    text = component.componentTitle,
+                    style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        text = component.componentDescription,
+                        style = MaterialTheme.typography.subtitle2,
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        maxLines = 5,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Icon(
+                imageVector = Icons.Default.ArrowRight,
+                contentDescription = "",
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .align(Alignment.CenterVertically)
             )
         }
     }
