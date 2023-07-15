@@ -1,44 +1,51 @@
 package com.example.jetpackcomposecomponents.ui.screens
 
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
+import androidx.compose.material.TextField
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.jetpackcomposecomponents.ui.contract.ComponentDetailContract.ComponentDetailViewState
+import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract
+import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract.UpdateComponentsViewState
 import com.example.jetpackcomposecomponents.ui.theme.Black700
-import com.example.jetpackcomposecomponents.viewmodel.ComponentDetailViewModel
+import com.example.jetpackcomposecomponents.viewmodel.UpdateComponentsViewModel
 
 @Composable
-fun ComponentDetail(viewModel: ComponentDetailViewModel, onCloseCallback: () -> Unit) =
+fun UpdateComponents(viewModel: UpdateComponentsViewModel, onCloseCallback: () -> Unit) =
     when (val state = viewModel.viewState.collectAsStateWithLifecycle().value) {
-        ComponentDetailViewState.LoadingState -> LoadingScreen()
-        is ComponentDetailViewState.SuccessState -> SuccessScreen(
-            url = state.url,
+        UpdateComponentsViewState.LoadingState -> LoadingScreen()
+        is UpdateComponentsViewState.SuccessState -> SuccessScreen(
+            data = state.data,
             onCloseCallback
-        )
-        ComponentDetailViewState.ErrorState -> ErrorScreen()
+        ) {
+            viewModel.onIntention(
+                UpdateComponentsContract.UpdateComponentsIntention.UpdateData(newData = it)
+            )
+        }
+        UpdateComponentsViewState.ErrorState -> ErrorScreen()
     }
 
 @Composable
-private fun SuccessScreen(url: String, onCloseCallback: () -> Unit) = Column(
+private fun SuccessScreen(
+    data: String,
+    onCloseCallback: () -> Unit,
+    onDataChangeCallback: (String) -> Unit
+) = Column(
     modifier = Modifier
         .fillMaxSize()
 ) {
     NavigationBar(onCloseCallback)
 
-    WebViewScreen(url)
+    UpdateJson(data, onDataChangeCallback)
 }
 
 @Composable
@@ -60,13 +67,18 @@ private fun NavigationBar(onCloseCallback: () -> Unit) = TopAppBar(
 )
 
 @Composable
-private fun WebViewScreen(url: String) = AndroidView(
+private fun UpdateJson(data: String, onDataChangeCallback: (String) -> Unit) = Column(
     modifier = Modifier
         .fillMaxSize()
         .padding(8.dp),
-    factory = {
-        WebView(it).apply {
-            webViewClient = WebViewClient()
-            loadUrl(url)
+) {
+    TextField(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp),
+        value = data,
+        onValueChange = { newData ->
+            onDataChangeCallback(newData)
         }
-    })
+    )
+}

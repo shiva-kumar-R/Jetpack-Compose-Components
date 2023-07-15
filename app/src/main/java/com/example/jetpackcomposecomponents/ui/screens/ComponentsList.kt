@@ -1,7 +1,6 @@
 package com.example.jetpackcomposecomponents.ui.screens
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -10,12 +9,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,17 +28,20 @@ import com.example.jetpackcomposecomponents.ui.theme.Black700
 import com.example.jetpackcomposecomponents.ui.theme.JetpackComponentsTheme
 import com.example.jetpackcomposecomponents.ui.theme.White200
 import com.example.jetpackcomposecomponents.viewmodel.ComponentViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun ComponentsList(
     viewModel: ComponentViewModel,
-    itemClickCallback: (String) -> Unit
+    itemClickCallback: (String) -> Unit,
+    updateActionNoClickCallback: () -> Unit
 ) = when (val state = viewModel.viewState.collectAsStateWithLifecycle().value) {
     ComponentViewState.LoadingState -> LoadingScreen()
     is ComponentViewState.SuccessState -> SuccessScreen(
         componentsList = state.successData,
         itemClickCallback = itemClickCallback,
-        updateActionClickCallback = {
+        updateActionYesClickCallback = updateActionNoClickCallback,
+        updateActionNoClickCallback = {
             viewModel.onIntention(
                 ComponentListContract.ComponentIntention.UpdateList
             )
@@ -48,23 +50,115 @@ fun ComponentsList(
     ComponentViewState.ErrorState -> ErrorScreen()
 }
 
-@Composable
-internal fun LoadingScreen() = Box(modifier = Modifier.fillMaxSize()) {
-    CircularProgressIndicator(
-        modifier = Modifier.align(Alignment.Center),
-        color = Black700
-    )
-}
-
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SuccessScreen(
     componentsList: List<Component>,
     itemClickCallback: (String) -> Unit,
-    updateActionClickCallback: () -> Unit
-) = Column(
-    modifier = Modifier
-        .fillMaxSize()
+    updateActionYesClickCallback: () -> Unit,
+    updateActionNoClickCallback: () -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        confirmValueChange = { it != ModalBottomSheetValue.HalfExpanded }
+    )
+    val coroutineScope = rememberCoroutineScope()
+
+    ModalBottomSheetLayout(sheetState = sheetState,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Black700),
+        sheetContent = {
+            UpdateListBottomSheet(
+                {
+                    coroutineScope.launch {
+                        if (sheetState.isVisible)
+                            sheetState.hide()
+                    }
+                    updateActionYesClickCallback()
+                },
+                {
+                    coroutineScope.launch {
+                        if (sheetState.isVisible)
+                            sheetState.hide()
+                    }
+                    updateActionNoClickCallback()
+                }
+            )
+        }) {
+        ComponentsListScreen(
+            componentsList = componentsList,
+            itemClickCallback = itemClickCallback,
+            updateActionClickCallback = {
+                coroutineScope.launch {
+                    if (sheetState.isVisible)
+                        sheetState.hide()
+                    else
+                        sheetState.show()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun UpdateListBottomSheet(
+    updateActionYesClickCallback: () -> Unit,
+    updateActionNoClickCallback: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp, horizontal = 8.dp)
+    ) {
+        Text(
+            text = stringResource(id = R.string.update_list_question),
+            modifier = Modifier
+                .padding(8.dp),
+            style = MaterialTheme.typography.h6
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.yes),
+                modifier = Modifier
+                    .padding(
+                        top = 8.dp,
+                        bottom = 2.dp,
+                        start = 4.dp,
+                        end = 8.dp
+                    )
+                    .weight(0.2f)
+                    .clickable { updateActionYesClickCallback() },
+                style = MaterialTheme.typography.button
+            )
+            Text(
+                text = stringResource(id = R.string.no),
+                modifier = Modifier
+                    .padding(
+                        top = 8.dp,
+                        bottom = 2.dp,
+                        start = 4.dp,
+                        end = 4.dp
+                    )
+                    .weight(0.2f)
+                    .clickable { updateActionNoClickCallback() },
+                style = MaterialTheme.typography.button
+            )
+            Spacer(modifier = Modifier.weight(0.6f))
+        }
+    }
+}
+
+@Composable
+private fun ComponentsListScreen(
+    componentsList: List<Component>,
+    itemClickCallback: (String) -> Unit,
+    updateActionClickCallback: () -> Unit
+) = Column {
     NavigationBar(updateActionClickCallback)
 
     ComponentsContent(componentsList, itemClickCallback)
@@ -150,7 +244,7 @@ private fun ComponentItem(component: Component, itemClickCallback: (String) -> U
                 }
             }
             Icon(
-                imageVector = Icons.Default.ArrowRight,
+                imageVector = Icons.Default.KeyboardArrowRight,
                 contentDescription = "",
                 modifier = Modifier
                     .fillMaxHeight()
@@ -160,9 +254,13 @@ private fun ComponentItem(component: Component, itemClickCallback: (String) -> U
     }
 }
 
+@Preview("Light mode")
+@Preview("Night mode", uiMode = UI_MODE_NIGHT_YES)
 @Composable
-internal fun ErrorScreen() {
-    Toast.makeText(LocalContext.current, R.string.error_message, Toast.LENGTH_LONG).show()
+fun LoadingScreen_Preview() {
+    JetpackComponentsTheme {
+        LoadingScreen()
+    }
 }
 
 @Preview("Light mode")
@@ -170,15 +268,6 @@ internal fun ErrorScreen() {
 @Composable
 fun SuccessScreen_Preview() {
     JetpackComponentsTheme {
-        SuccessScreen(emptyList(), {}, {})
-    }
-}
-
-@Preview("Light mode")
-@Preview("Night mode", uiMode = UI_MODE_NIGHT_YES)
-@Composable
-fun LoadingScreen_Preview() {
-    JetpackComponentsTheme {
-        LoadingScreen()
+        SuccessScreen(emptyList(), {}, {}, {})
     }
 }
