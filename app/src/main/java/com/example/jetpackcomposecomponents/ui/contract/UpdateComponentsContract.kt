@@ -10,6 +10,8 @@ interface UpdateComponentsContract {
         ) : UpdateComponentsViewState()
 
         object ErrorState: UpdateComponentsViewState()
+
+        object UpdateListSuccessState: UpdateComponentsViewState()
     }
 
     sealed class UpdateComponentsIntention {

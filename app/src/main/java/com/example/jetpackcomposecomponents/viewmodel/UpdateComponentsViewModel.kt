@@ -1,16 +1,18 @@
 package com.example.jetpackcomposecomponents.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jetpackcomposecomponents.entity.Component
 import com.example.jetpackcomposecomponents.repository.ComponentRepository
 import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract
 import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract
 import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract.UpdateComponentsViewState
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,16 +31,14 @@ class UpdateComponentsViewModel @Inject constructor(
     }
 
     init {
-        getAllComponents()
-    }
-
-    private fun getAllComponents() {
         flow {
             emit(componentRepository.getComponents())
         }.onEach { data ->
+            val listComponent = object : TypeToken<List<Component>>() {}.type
+            val response = Gson().toJson(data, listComponent)
             updateViewState {
                 UpdateComponentsViewState.SuccessState(
-                    data = data.toString()
+                    data = formatJsonString(response)
                 )
             }
         }.catch {
@@ -50,16 +50,31 @@ class UpdateComponentsViewModel @Inject constructor(
 
     fun onIntention(intention: UpdateComponentsContract.UpdateComponentsIntention): Any? =
         when (intention) {
-            is UpdateComponentsContract.UpdateComponentsIntention.UpdateData -> getSuccessData()?.let {
-                UpdateComponentsViewState.SuccessState(data = it + intention.newData)
+            is UpdateComponentsContract.UpdateComponentsIntention.UpdateData -> updateViewState {
+                UpdateComponentsViewState.SuccessState(intention.newData)
             }
             UpdateComponentsContract.UpdateComponentsIntention.SaveData -> updateComponents()
         }
 
     private fun updateComponents() {
-        viewModelScope.launch {
-
-        }
+        val data = getSuccessData()
+        val listComponent = object : TypeToken<List<Component>>() {}.type
+        val response = Gson().fromJson<List<Component>>(data, listComponent)
+        flow {
+            emit(response?.let { componentRepository.updateComponents(response) })
+        }.onStart {
+            updateViewState {
+                UpdateComponentsViewState.LoadingState
+            }
+        }.onCompletion {
+            updateViewState {
+                UpdateComponentsViewState.UpdateListSuccessState
+            }
+        }.catch {
+            updateViewState {
+                UpdateComponentsViewState.ErrorState
+            }
+        }.launchIn(viewModelScope)
     }
 
     private fun getSuccessData() = viewState.value.run {
@@ -70,5 +85,42 @@ class UpdateComponentsViewModel @Inject constructor(
 
     private fun updateViewState(stateModifier: (UpdateComponentsViewState) -> UpdateComponentsViewState) {
         _viewState.update(stateModifier)
+    }
+
+    private fun formatJsonString(text: String): String {
+        val json = StringBuilder()
+        var indentString = ""
+        for (element in text) {
+            when (element) {
+                '{', '[' -> {
+                    json.append(
+                        """
+
+                        $indentString$element
+                        
+                        """.trimIndent()
+                    )
+                    indentString += "\t"
+                    json.append(indentString)
+                }
+                '}', ']' -> {
+                    indentString = indentString.replaceFirst("\t".toRegex(), "")
+                    json.append(
+                        """
+                        
+                        $indentString$element
+                        """.trimIndent()
+                    )
+                }
+                ',' -> json.append(
+                    """
+                    $element
+                    $indentString
+                    """.trimIndent()
+                )
+                else -> json.append(element)
+            }
+        }
+        return json.toString()
     }
 }

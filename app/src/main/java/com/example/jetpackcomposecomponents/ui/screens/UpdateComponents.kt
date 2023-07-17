@@ -37,6 +37,7 @@ fun UpdateComponents(viewModel: UpdateComponentsViewModel, onCloseCallback: () -
                 )
             })
         UpdateComponentsViewState.ErrorState -> ErrorScreen()
+        UpdateComponentsViewState.UpdateListSuccessState -> onCloseCallback()
     }
 
 @Composable
@@ -54,40 +55,46 @@ private fun SuccessScreen(
     UpdateJson(data, onDataChangeCallback)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun NavigationBar(
     onCloseCallback: () -> Unit,
     updateActionClickCallback: () -> Unit
-) = TopAppBar(
-    modifier = Modifier
-        .fillMaxWidth(),
-    title = { },
-    navigationIcon = {
-        Icon(
-            imageVector = Icons.Default.Close,
-            contentDescription = "",
-            modifier = Modifier
-                .padding(10.dp)
-                .clickable { onCloseCallback() },
-            tint = Black700
-        )
-    },
-    actions = {
-        TextButton(
-            modifier = Modifier
-                .padding(end = 8.dp),
-            onClick = { updateActionClickCallback() },
-        ) {
-            Text(
-                text = stringResource(id = R.string.update),
-                color = White200
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    TopAppBar(
+        modifier = Modifier
+            .fillMaxWidth(),
+        title = { },
+        navigationIcon = {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(10.dp)
+                    .clickable { onCloseCallback() },
+                tint = Black700
             )
-        }
-    },
-    elevation = 0.dp
-)
+        },
+        actions = {
+            TextButton(
+                modifier = Modifier
+                    .padding(end = 8.dp),
+                onClick = {
+                    keyboardController?.hide()
+                    updateActionClickCallback()
+                },
+            ) {
+                Text(
+                    text = stringResource(id = R.string.update),
+                    color = White200
+                )
+            }
+        },
+        elevation = 0.dp
+    )
+}
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun UpdateJson(data: String, onDataChangeCallback: (String) -> Unit) = Column(
     modifier = Modifier
@@ -95,16 +102,14 @@ private fun UpdateJson(data: String, onDataChangeCallback: (String) -> Unit) = C
         .padding(8.dp)
         .verticalScroll(rememberScrollState()),
 ) {
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp),
         value = data,
-        onValueChange = { newData ->
+        onValueChange = ({ newData ->
             onDataChangeCallback(newData)
-        },
+        }),
         maxLines = 50,
         minLines = 25
     )

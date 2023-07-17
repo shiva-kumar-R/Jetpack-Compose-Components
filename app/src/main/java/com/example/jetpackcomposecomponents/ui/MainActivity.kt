@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 val viewModel: UpdateComponentsViewModel = hiltViewModel()
                 UpdateComponents(viewModel = viewModel) {
-                    navController.popBackStack()
+                    navController.popBackStack(route = "destination_components_list", inclusive = false)
                 }
             }
         }

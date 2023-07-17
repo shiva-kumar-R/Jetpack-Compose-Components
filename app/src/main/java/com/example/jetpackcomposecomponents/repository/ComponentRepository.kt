@@ -38,12 +38,20 @@ class ComponentRepository @Inject constructor(
     }
 
     fun getComponentsFromJson(): List<Component>? = try {
-        val jsonString = context.assets.open("components.json")
-            .bufferedReader()
-            .use { it.readText() }
+        val jsonString = getRawComponentsFromJson()
         val listComponent = object : TypeToken<List<Component>>() {}.type
         val response = Gson().fromJson<List<Component>>(jsonString, listComponent)
         response
+    } catch (e: Exception) {
+        Log.w(TAG, e)
+        null
+    }
+
+    fun getRawComponentsFromJson(): String? = try {
+        val jsonString = context.assets.open("components.json")
+            .bufferedReader()
+            .use { it.readText() }
+        jsonString
     } catch (e: Exception) {
         Log.w(TAG, e)
         null
