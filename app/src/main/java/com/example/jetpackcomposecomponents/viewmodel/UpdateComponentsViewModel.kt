@@ -2,18 +2,20 @@ package com.example.jetpackcomposecomponents.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.jetpackcomposecomponents.repository.ComponentRepository
+import com.example.jetpackcomposecomponents.ui.contract.ComponentListContract
 import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract
 import com.example.jetpackcomposecomponents.ui.contract.UpdateComponentsContract.UpdateComponentsViewState
+import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class UpdateComponentsViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle
+    private val componentRepository: ComponentRepository
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow<UpdateComponentsViewState>(
@@ -26,18 +28,24 @@ class UpdateComponentsViewModel @Inject constructor(
         private val TAG = UpdateComponentsViewModel::class.simpleName
     }
 
-    private val componentUrl: String = savedStateHandle.get<String>("url").orEmpty()
-
     init {
-        if (componentUrl.isNotEmpty()) {
+        getAllComponents()
+    }
+
+    private fun getAllComponents() {
+        flow {
+            emit(componentRepository.getComponents())
+        }.onEach { data ->
             updateViewState {
-                UpdateComponentsViewState.SuccessState(componentUrl)
+                UpdateComponentsViewState.SuccessState(
+                    data = data.toString()
+                )
             }
-        } else {
+        }.catch {
             updateViewState {
                 UpdateComponentsViewState.ErrorState
             }
-        }
+        }.launchIn(viewModelScope)
     }
 
     fun onIntention(intention: UpdateComponentsContract.UpdateComponentsIntention): Any? =
@@ -45,7 +53,14 @@ class UpdateComponentsViewModel @Inject constructor(
             is UpdateComponentsContract.UpdateComponentsIntention.UpdateData -> getSuccessData()?.let {
                 UpdateComponentsViewState.SuccessState(data = it + intention.newData)
             }
+            UpdateComponentsContract.UpdateComponentsIntention.SaveData -> updateComponents()
         }
+
+    private fun updateComponents() {
+        viewModelScope.launch {
+
+        }
+    }
 
     private fun getSuccessData() = viewState.value.run {
         if (this is UpdateComponentsViewState.SuccessState) {

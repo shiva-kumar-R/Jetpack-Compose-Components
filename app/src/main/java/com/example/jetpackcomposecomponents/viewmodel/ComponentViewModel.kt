@@ -49,7 +49,6 @@ class ComponentViewModel @Inject constructor(
         flow {
             emit(componentRepository.getComponents())
         }.onEach { data ->
-            //requireNotNull(data)
             updateViewState {
                 ComponentViewState.SuccessState(
                     successData = data.orEmpty()

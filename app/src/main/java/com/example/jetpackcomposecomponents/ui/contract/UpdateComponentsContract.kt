@@ -14,6 +14,7 @@ interface UpdateComponentsContract {
 
     sealed class UpdateComponentsIntention {
         data class UpdateData(val newData: String): UpdateComponentsIntention()
+        object SaveData: UpdateComponentsIntention()
     }
 
     sealed class UpdateComponentsEvent

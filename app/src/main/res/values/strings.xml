@@ -6,5 +6,6 @@
     <string name="update_list_question">Do you want to modify the source file?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="update">Update</string>
     <string name="error_message">An Error occurred. Please try again after sometime.</string>
 </resources>

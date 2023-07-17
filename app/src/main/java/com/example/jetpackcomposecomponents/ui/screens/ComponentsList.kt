@@ -175,13 +175,16 @@ private fun NavigationBar(updateActionClickCallback: () -> Unit) = TopAppBar(
         )
     },
     actions = {
-        Text(
-            text = stringResource(id = R.string.update_list),
+        TextButton(
             modifier = Modifier
-                .padding(end = 8.dp)
-                .clickable { updateActionClickCallback() },
-            style = MaterialTheme.typography.button
-        )
+                .padding(end = 8.dp),
+            onClick = { updateActionClickCallback() },
+        ) {
+            Text(
+                text = stringResource(id = R.string.update_list),
+                color = White200
+            )
+        }
     },
     elevation = 0.dp
 )
