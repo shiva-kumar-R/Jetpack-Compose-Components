@@ -12,11 +12,8 @@ An Android Application with Information regarding basic Jetpack Components.
 ---
 ## Screenshots
 
-![Home Page](Screenshot_20230718-162532.jpg)
-![Actions](Screenshot_20230718-162538.jpg)
-![Description of Each Component](Screenshot_20230718-162612.jpg)
-![Update Source file](Screenshot_20230718-162545.jpg)
-
+<img src="screenshots/Screenshot_20230718-162532.jpg" width="300">  <img src="screenshots/Screenshot_20230718-162538.jpg" width="300"> 
+<img src="screenshots/Screenshot_20230718-162612.jpg" width="300">  <img src="screenshots/Screenshot_20230718-162545.jpg" width="300"> 
 
 ---
 ## Components/Architecture Used 
